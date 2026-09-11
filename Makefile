@@ -4,7 +4,7 @@ LD = ld
 CFLAGS = -m32 -ffreestanding -fno-pie -fno-stack-protector -O2
 LDFLAGS = -m elf_i386 -T linker.ld
 
-all: cos.iso
+all: micro.iso
 
 boot.o: boot.S
 	$(CC) $(CFLAGS) -c boot.S -o boot.o
@@ -21,7 +21,7 @@ micro.iso: kernel.bin grub.cfg
 	cp grub.cfg iso/boot/grub/grub.cfg
 	grub-mkrescue -o micro.iso iso
 
-run: cos.iso
+run: micro.iso
 	qemu-system-i386 -cdrom micro.iso
 
 clean:
