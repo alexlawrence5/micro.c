@@ -15,7 +15,7 @@ kernel.o: micro.c
 kernel.bin: boot.o kernel.o
 	$(LD) $(LDFLAGS) -o kernel.bin boot.o kernel.o
 
-cos.iso: kernel.bin grub.cfg
+micro.iso: kernel.bin grub.cfg
 	mkdir -p iso/boot/grub
 	cp kernel.bin iso/boot/kernel.bin
 	cp grub.cfg iso/boot/grub/grub.cfg
