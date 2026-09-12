@@ -302,3 +302,5 @@ void kernel_main(void)
     print("bmesg: MicroOS C\n");
     shell();
 }
+
+// after me writing this.. my brain fried when I patched some bugs.
