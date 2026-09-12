@@ -259,7 +259,7 @@ static void shell(void)
             putc('\n');
         }
         else if (strcmp(command, "info") == 0) {
-            print("MicroOS C Edition 1.7\n");
+            print("MicroOS C Edition 1.8\n");
             print("Architecture: ");
             print(arch);
             print("Build type: ");
