@@ -2,7 +2,12 @@
 // so i will name the variables, functions clean for this.
 // please dont flag this project as vibecoded, it is not :-C.
 
+
+// letzz setup the buffers here
 char user[128];
+char passw[256];
+char input[256];
+char choice[128];
 
 #include "sys/kernelvars.h"
 #include "sys/fetchvars.h"
@@ -166,12 +171,68 @@ void boot_ascii() {
 }
 
 void setup_wiz_microos() {
-    print("enter your all loving UNIX name: ");
+    print("Enter your all loving UNIX name: ");
     readline(user, 128);
+    print("Enter your password for that user: ");
+    readline(passw, 256);
+    clear();
 }
 
-void micro_fetch() {
+void setup_wiz_microos_choices() {
+    print("Welcome to the MicroOS 1.8 Big Camel!\n");
+    print("1. Set up your system\n");
+    print("2. Halt the CPU\n");
+    print("3. Reboot\n");
+    print("Your choice: ");
 
+    readline(choice, 128);
+    
+    if (strcmp(choice, "1") == 0) {
+        clear();
+        setup_wiz_microos();
+    } else if (strcmp(choice, "2") == 0) {
+        __asm__ volatile (
+            "hlt"
+        );
+    } else if (strcmp(choice, "3") == 0) {
+        __asm__ volatile (
+            "cli\n"
+            "mov $0xFE, %%al\n"
+            "outb %%al, $0x64\n"
+            :
+            :
+            : "eax"
+        );
+    } else if (choice[0] == '\0') {
+        print("Invalid choice. rebooting!");
+        __asm__ volatile (
+                "cli\n"
+                "mov $0xFE, %%al\n"
+                "outb %%al, $0x64\n"
+                :
+                :
+                :"eax"
+            );
+        } else if (choice[0] != '\0') {
+            print("Invalid choice. rebooting!");
+            __asm__ volatile (
+                    "cli\n"
+                    "mov $0xFE, %%al\n"
+                    "outb %%al, $0x64\n"
+                    :
+                    :
+                    :"eax"
+            );
+        }
+    }
+
+void micro_fetch() {
+    print("OS: ");
+    print(os);
+    print("Kernel: ");
+    print(kernel);
+    print("CPU Platform: ");
+    print(fetch_arch);
 }
 
 // end of app functions
@@ -180,7 +241,9 @@ static void shell(void)
 {
     char command[128];
 
-    setup_wiz_microos();
+    setup_wiz_microos_choices();
+
+    boot_ascii();
 
     while (1) {
         print(user);
@@ -188,15 +251,7 @@ static void shell(void)
 
         readline(command, sizeof(command));
 
-        if (strcmp(command, "help") == 0) {
-            print("Commands:\n");
-            print("  help   - show commands\n");
-            print("  clear  - clear screen\n");
-            print("  echo   - print text\n");
-            print("  info   - system information\n");
-            print("  reboot - reboot system\n");
-        }
-        else if (strcmp(command, "clear") == 0) {
+        if (strcmp(command, "clear") == 0) {
             clear();
         }
         else if (starts_with(command, "echo ")) {
@@ -211,24 +266,27 @@ static void shell(void)
             print(build);
         }
         else if (strcmp(command, "microfetch") == 0) {
-            print("OS: ");
-            print(os);
-            print("Kernel: ");
-            print(kernel);
-            print("CPU: ");
-            print(fetch_arch);
+            micro_fetch();
         }
-        else if (strcmp(command, "reboot") == 0) {
-            print("rebooting...\n");
 
-            __asm__ volatile (
-                "cli\n"
-                "mov $0xFE, %%al\n"
-                "outb %%al, $0x64\n"
-                :
-                :
-                : "eax"
-            );
+        else if (strcmp(command, "reboot") == 0) {
+            print("this requires admin perms. for security reasons, we need you to enter your password: ");
+            readline(input, 256);
+            if (strcmp(input, passw) == 0) {
+                print("rebooting...\n");
+
+                __asm__ volatile (
+                    "cli\n"
+                    "mov $0xFE, %%al\n"
+                    "outb %%al, $0x64\n"
+                    :
+                    :
+                    : "eax"
+                );
+                }
+            else {
+                print("msh: invalid password\n");
+            }
         }
         else if (command[0] != '\0') {
             print("msh: invalid command; ");
@@ -242,6 +300,5 @@ void kernel_main(void)
 {
     clear();
     print("bmesg: MicroOS C\n");
-    boot_ascii();
     shell();
 }
