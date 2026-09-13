@@ -158,6 +158,44 @@ static void readline(char *buffer, int max)
     }
 }
 
+static void quickrsh(void)
+{
+    char quickcommand[128];
+
+    print("Booted into Quick Recovery SHell.\n");
+
+    while (1) {
+        print("qrsh:/$ ");
+        readline(quickcommand, sizeof(quickcommand));
+
+        if (strcmp(quickcommand, "cli") == 0) {
+            __asm__ volatile (
+                "cli"
+            );
+        }
+        else if (strcmp(quickcommand, "hlt") == 0) {
+            __asm__ volatile (
+                "hlt"
+            );
+        }
+        else if (strcmp(quickcommand, "sti") == 0) {
+            __asm__ volatile (
+                "sti"
+            );
+        }
+        else if (strcmp(quickcommand, "nop") == 0) {
+            __asm__ volatile (
+                "nop"
+            );
+        }
+        else if (choice[0] != '\0') {
+            print("qrsh: invalid command; ");
+            print(quickcommand);
+            putc('\n');
+        }
+    }
+}
+
 // app functions
 
 void boot_ascii() {
@@ -181,8 +219,9 @@ void setup_wiz_microos() {
 void setup_wiz_microos_choices() {
     print("Welcome to the MicroOS 1.8 Big Camel!\n");
     print("1. Set up your system\n");
-    print("2. Halt the CPU\n");
-    print("3. Reboot\n");
+    print("2. Boot QRSH\n");
+    print("3. Halt the CPU\n");
+    print("4. Reboot\n");
     print("Your choice: ");
 
     readline(choice, 128);
@@ -191,10 +230,13 @@ void setup_wiz_microos_choices() {
         clear();
         setup_wiz_microos();
     } else if (strcmp(choice, "2") == 0) {
+        clear();
+        quickrsh();
+    } else if (strcmp(choice, "3") == 0) {
         __asm__ volatile (
             "hlt"
         );
-    } else if (strcmp(choice, "3") == 0) {
+    } else if (strcmp(choice, "4") == 0) {
         __asm__ volatile (
             "cli\n"
             "mov $0xFE, %%al\n"
@@ -237,6 +279,7 @@ void micro_fetch() {
 
 // end of app functions
 
+
 static void shell(void)
 {
     char command[128];
@@ -259,7 +302,7 @@ static void shell(void)
             putc('\n');
         }
         else if (strcmp(command, "info") == 0) {
-            print("MicroOS C Edition 1.8\n");
+            print("MicroOS C Edition 1.7\n");
             print("Architecture: ");
             print(arch);
             print("Build type: ");
@@ -302,5 +345,3 @@ void kernel_main(void)
     print("bmesg: MicroOS C\n");
     shell();
 }
-
-// after me writing this.. my brain fried when I patched some bugs.
