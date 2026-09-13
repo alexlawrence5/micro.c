@@ -3,7 +3,7 @@ MicroOS C and MicroOS ASM is NOT the same operating systems, their philosophy is
 
 # MicroOS C
 
-A small 32-bit x86 operating system written primarily in C, with a minimal assembly bootstrap.
+A small 32-bit x86 Unix-like operating system written primarily in C, with a minimal assembly bootstrap.
 
 MicroOS C is the C-based evolution of the MicroOS project, focused on learning low-level systems programming, kernel development, memory management, hardware interaction, and operating-system fundamentals.
 
