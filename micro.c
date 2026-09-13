@@ -342,6 +342,5 @@ static void shell(void)
 void kernel_main(void)
 {
     clear();
-    print("bmesg: MicroOS C\n");
     shell();
 }
