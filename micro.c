@@ -8,6 +8,10 @@ char user[128];
 char passw[256];
 char input[256];
 char choice[128];
+char mkdirname[512];
+char touchfile[512];
+char filecheck[512];
+char filebytes[8092];
 
 #include "sys/kernelvars.h"
 #include "sys/fetchvars.h"
@@ -217,7 +221,7 @@ void setup_wiz_microos() {
 }
 
 void setup_wiz_microos_choices() {
-    print("Welcome to the MicroOS 1.8 Big Camel!\n");
+    print("Welcome to the MicroOS 1.9 Big Camel!\n");
     print("1. Set up your system\n");
     print("2. Boot QRSH\n");
     print("3. Halt the CPU\n");
@@ -277,6 +281,29 @@ void micro_fetch() {
     print(fetch_arch);
 }
 
+void mkdir() {
+    print("Directory name: ");
+    readline(mkdirname, 512);
+}
+
+void touch() {
+    print("File name: ");
+    readline(touchfile, 512);
+}
+
+void bytefiles() {
+    print("Enter file to add bytes: ");
+    readline(filecheck, 512);
+
+    if (strcmp(filecheck, touchfile) == 0) {
+        print("Bytes: ");
+        readline(filebytes, 8092);
+    }
+    else if (filecheck[0] != '\0') {
+        print("Invalid.\n");
+    }
+}
+
 // end of app functions
 
 
@@ -300,6 +327,15 @@ static void shell(void)
         else if (starts_with(command, "echo ")) {
             print(command + 5);
             putc('\n');
+        }
+        else if (strcmp(command, "mkdir") == 0) {
+            mkdir();
+        }
+        else if (strcmp(command, "touch") == 0) {
+            touch();
+        }
+        else if (strcmp(command, "writebyte") == 0) {
+            bytefiles();
         }
         else if (strcmp(command, "info") == 0) {
             print("MicroOS C Edition 1.7\n");
